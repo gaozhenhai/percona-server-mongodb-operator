@@ -1,7 +1,7 @@
 package psmdb
 
 import (
-	policyv1 "k8s.io/api/policy/v1"
+	policyv1 "k8s.io/api/policy/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	api "github.com/percona/percona-server-mongodb-operator/pkg/apis/psmdb/v1"
@@ -10,7 +10,7 @@ import (
 func PodDisruptionBudget(spec *api.PodDisruptionBudgetSpec, labels map[string]string, namespace string) *policyv1.PodDisruptionBudget {
 	return &policyv1.PodDisruptionBudget{
 		TypeMeta: metav1.TypeMeta{
-			APIVersion: "policy/v1",
+			APIVersion: "policy/v1beta1",
 			Kind:       "PodDisruptionBudget",
 		},
 		ObjectMeta: metav1.ObjectMeta{
