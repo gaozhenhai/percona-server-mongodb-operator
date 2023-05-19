@@ -110,6 +110,10 @@ func (r *ReconcilePerconaServerMongoDB) reconcileUsersSecret(ctx context.Context
 			}
 		}
 		if shouldUpdate {
+			if err := setControllerReference(cr, &secretObj, r.scheme); err != nil {
+				return errors.Wrapf(err, "set owner ref for secret %s", secretObj.Name)
+			}
+
 			err = r.client.Update(ctx, &secretObj)
 		}
 		return errors.Wrap(err, "update users secret")
@@ -132,6 +136,11 @@ func (r *ReconcilePerconaServerMongoDB) reconcileUsersSecret(ctx context.Context
 		Data: data,
 		Type: corev1.SecretTypeOpaque,
 	}
+
+	if err := setControllerReference(cr, &secretObj, r.scheme); err != nil {
+		return errors.Wrapf(err, "set owner ref for secret %s", secretObj.Name)
+	}
+
 	err = r.client.Create(ctx, &secretObj)
 	if err != nil {
 		return fmt.Errorf("create Users secret: %v", err)

@@ -358,7 +358,7 @@ func (r *ReconcilePerconaServerMongoDB) Reconcile(ctx context.Context, request r
 	}
 
 	if is1120 := cr.CompareVersion("1.12.0") >= 0; is1120 || (!is1120 && *cr.Spec.Mongod.Security.EnableEncryption) {
-		created, err := r.ensureSecurityKey(ctx, cr, cr.Spec.EncryptionKeySecretName(), api.EncryptionKeyName, 32, false)
+		created, err := r.ensureSecurityKey(ctx, cr, cr.Spec.EncryptionKeySecretName(), api.EncryptionKeyName, 32, true)
 		if err != nil {
 			err = errors.Wrapf(err, "ensure mongo Key %s", cr.Spec.EncryptionKeySecretName())
 			return reconcile.Result{}, err

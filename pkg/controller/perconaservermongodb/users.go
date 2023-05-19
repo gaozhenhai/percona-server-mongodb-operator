@@ -64,6 +64,11 @@ func (r *ReconcilePerconaServerMongoDB) reconcileUsers(ctx context.Context, cr *
 			Name:      secretName,
 			Namespace: cr.Namespace,
 		}
+
+		if err := setControllerReference(cr, internalSysUsersSecret, r.scheme); err != nil {
+			return errors.Wrapf(err, "set owner ref for secret %s", internalSysUsersSecret.Name)
+		}
+
 		err = r.client.Create(ctx, internalSysUsersSecret)
 		if err != nil {
 			return errors.Wrap(err, "create internal sys users secret")
