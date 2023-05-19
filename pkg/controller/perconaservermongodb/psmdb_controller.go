@@ -470,6 +470,22 @@ func (r *ReconcilePerconaServerMongoDB) Reconcile(ctx context.Context, request r
 			return reconcile.Result{}, errors.Wrapf(err, "create or update service for replset %s", replset.Name)
 		}
 
+		// Create primary service
+		primaryService := psmdb.Service(cr, replset)
+		primaryService.Name = primaryService.Name + "-primary-service"
+		primaryService.Spec.Type = corev1.ServiceTypeClusterIP
+		primaryService.Spec.ClusterIP = ""
+
+		err = setControllerReference(cr, primaryService, r.scheme)
+		if err != nil {
+			return reconcile.Result{}, errors.Wrapf(err, "set owner ref for service %s", primaryService.Name)
+		}
+
+		err = r.createOrUpdateSvc(ctx, cr, primaryService, false)
+		if err != nil {
+			return reconcile.Result{}, errors.Wrapf(err, "create or update primary service for replset %s", replset.Name)
+		}
+
 		// Create exposed services
 		if replset.Expose.Enabled {
 			_, err := r.ensureExternalServices(ctx, cr, replset, &pods)
